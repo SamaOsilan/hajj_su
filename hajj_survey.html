@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hajj Survey App</title>
+<style>
+
+body { font-family: Arial; padding: 20px; }
+
+input, select, button { width: 100%; padding: 10px; margin: 10px 0; font-size: 16px; }
+
+table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+
+th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+
+h2 { text-align: center; }
+</style>
+</head>
+<body>
+<h2>Hajj Survey App</h2>
+<div id="loginDiv">
+<input type="text" id="username" placeholder="أدخلي اسمك" />
+<button onclick="login()">دخول</button>
+</div>
+<div id="surveyDiv" style="display:none;">
+<h3 id="welcomeUser"></h3>
+<select id="nationality">
+<option value="Pakistan">باكستان</option>
+<option value="Egypt">مصر</option>
+<option value="India">الهند</option>
+<option value="Indonesia">اندونيسيا</option>
+<option value="Yemen">اليمن</option>
+<option value="Iraq">العراق</option>
+<option value="Uzbekistan">اوزباكستان</option>
+<option value="Bangladesh">بنجلاديش</option>
+<option value="Sudan">السودان</option>
+<option value="Algeria">الجزائر</option>
+<option value="Morocco">المغرب</option>
+<option value="UAE">الامارات</option>
+<option value="Kuwait">الكويت</option>
+<option value="Libya">ليبيا</option>
+<option value="Jordan">الأردن</option>
+<option value="Turkey">تركيا</option>
+<option value="Iran">ايران</option>
+<option value="USA">امريكا</option>
+</select>
+<select id="gender">
+<option value="Male">ذكر</option>
+<option value="Female">أنثى</option>
+</select>
+<button onclick="addEntry()">إضافة</button>
+<button onclick="downloadCSV()">تحميل التقرير</button>
+<button onclick="resetData()">تصفير اليوم</button>
+<table>
+<thead>
+<tr>
+<th>الجنسية</th>
+<th>ذكر</th>
+<th>أنثى</th>
+<th>الإجمالي</th>
+</tr>
+</thead>
+<tbody id="resultTable"></tbody>
+</table>
+</div>
+<script>
+
+// حفظ البيانات لكل مستخدم في LocalStorage
+
+let currentUser = '';
+
+let data = {};
+
+function login() {
+
+  currentUser = document.getElementById('username').value.trim();
+
+  if (!currentUser) {
+
+    alert("Enter your name");
+
+    return;
+
+  }
+
+  // تحميل بيانات المستخدم إذا موجودة
+
+  data = JSON.parse(localStorage.getItem("survey_" + currentUser)) || {};
+
+  document.getElementById('loginDiv').style.display = "none";
+
+  document.getElementById('surveyDiv').style.display = "block";
+
+  document.getElementById('welcomeUser').innerText = "مرحبًا، " + currentUser;
+
+  updateTable();
+
+}
+
+function addEntry() {
+
+  let nat = document.getElementById("nationality").value;
+
+  let gen = document.getElementById("gender").value;
+
+  if (!data[nat]) data[nat] = { Male: 0, Female: 0 };
+
+  data[nat][gen]++;
+
+  localStorage.setItem("survey_" + currentUser, JSON.stringify(data));
+
+  updateTable();
+
+}
+
+function updateTable() {
+
+  let table = document.getElementById("resultTable");
+
+  table.innerHTML = "";
+
+  for (let nat in data) {
+
+    let male = data[nat].Male || 0;
+
+    let female = data[nat].Female || 0;
+
+    let total = male + female;
+
+    table.innerHTML += `
+<tr>
+<td>${nat}</td>
+<td>${male}</td>
+<td>${female}</td>
+<td>${total}</td>
+</tr>
+
+    `;
+
+  }
+
+}
+
+function downloadCSV() {
+
+  let csv = "الجنسية,ذكر,أنثى,الإجمالي\n";
+
+  for (let nat in data) {
+
+    let male = data[nat].Male || 0;
+
+    let female = data[nat].Female || 0;
+
+    let total = male + female;
+
+    csv += `${nat},${male},${female},${total}\n`;
+
+  }
+
+  let blob = new Blob([csv], { type: "text/csv" });
+
+  let url = URL.createObjectURL(blob);
+
+  let a = document.createElement("a");
+
+  a.href = url;
+
+  a.download = "survey_report_" + currentUser + ".csv";
+
+  a.click();
+
+}
+
+function resetData() {
+
+  if (confirm("هل تريد تصفير البيانات؟")) {
+
+    data = {};
+
+    localStorage.setItem("survey_" + currentUser, JSON.stringify(data));
+
+    updateTable();
+
+  }
+
+}
+</script>
+</body>
+</html>
+ 
