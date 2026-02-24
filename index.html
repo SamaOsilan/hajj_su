@@ -223,35 +223,21 @@ function updateTable() {
 }
 
 function downloadCSV() {
-
-  let csv = "الجنسية,ذكر,أنثى,الإجمالي\n";
-
+  // CSV بالعناوين بالانجليزي لتجنب مشاكل Excel
+  let csv = "Nationality,Male,Female\n";
   for (let nat in data) {
-
     let male = data[nat].Male || 0;
-
     let female = data[nat].Female || 0;
-
-    let total = male + female;
-
-    csv += `${nat},${male},${female},${total}\n`;
-
+    csv += `"${nat}",${male},${female}\n`; // علامات اقتباس تحمي الاسماء
   }
 
-  let blob = new Blob([csv], { type: "text/csv" });
-
+  let blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
   let url = URL.createObjectURL(blob);
-
   let a = document.createElement("a");
-
   a.href = url;
-
   a.download = "survey_report_" + currentUser + ".csv";
-
   a.click();
-
 }
-
 function resetData() {
 
   if (confirm("هل تريد تصفير البيانات؟")) {
@@ -270,3 +256,4 @@ function resetData() {
 </html>
  </div>
 </body>
+
