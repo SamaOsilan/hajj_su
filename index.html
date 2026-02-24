@@ -222,6 +222,7 @@ function updateTable() {
 
 }
 
+
 function downloadCSV() {
   // CSV بالعناوين بالانجليزي لتجنب مشاكل Excel
   let csv = "Nationality,Male,Female\n";
@@ -238,6 +239,7 @@ function downloadCSV() {
   a.download = "survey_report_" + currentUser + ".csv";
   a.click();
 }
+
 function resetData() {
 
   if (confirm("هل تريد تصفير البيانات؟")) {
@@ -256,4 +258,5 @@ function resetData() {
 </html>
  </div>
 </body>
+
 
